@@ -1,0 +1,11 @@
+[Unit]
+Description=CDH daemon service
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi/obc/OBC/CDHdaemon
+ExecStart=/home/pi/obc/OBC/CDHdaemon/CDHdaemon.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

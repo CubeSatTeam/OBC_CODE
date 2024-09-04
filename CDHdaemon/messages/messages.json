@@ -1,0 +1,108 @@
+{
+	"Comments": {
+		"Introduction": "This file contains all the available messages formatted as follows:",
+		"messageName":{
+			"code": "message opcode, always c_uint8 type",
+			"fields(optional)":{
+				"field1": "type (c_uint8/c_uint16/c_uint32)[*elemnum]",
+				"field2": "type (c_uint8/c_uint16/c_uint32)[*elemnum]",
+				" ... ": " ... "
+			}
+		},
+		
+		"Fields": "Fields names cannot contain spaces or begin with numbers (C rules), available types are defined in the types section in the format:",
+		
+		"C types": "To allow conversion between python ctypes and real C types, this correspondance should be defined in the C types section for every type used, with the format:",
+		
+		"ctypes name (only valid ctypes types)" : "corresponding type in C",
+
+		"Py types 1": "Similarly to C types, also the correspondance between python ctypes and python types should be defined in the Py types section with the format:",
+		
+		"ctypes name (only valid ctypes types)" : "corresponding type in Python",
+
+		"Py types 2": "This allows parsing strings containing the structure values to fill the generated python classes:",
+
+		"Array types": "array tipes are written in ctypes mode (type*elementnumber) WITHOUT SPACES",
+		
+		"Messages definition": "messages are defined under the messages section and will be used by the CDH to interpret what comes from the serial line, there's also a script generateStructs.py which will read this file and generate a C header file with the corresponding structures defined"
+
+	},
+
+	"C types":{
+		"c_uint8":"uint8_t",
+		"c_uint16":"uint16_t",
+		"c_uint32":"uint32_t",
+		"c_float":"float"
+	},
+	
+	"Py types":{
+		"c_uint8":"int",
+		"c_uint16":"int",
+		"c_uint32":"int",
+		"c_float":"float"	
+	},
+
+	"messages": {
+		"opmodeADCS": {
+			"code": 20,
+			"fields": {
+				"opmode": "c_uint8"
+			}
+		},
+		"attitudeADCS": {
+			"code": 21,
+			"fields": {
+				"omega_x": "c_float",
+				"omega_y": "c_float",
+				"omega_z": "c_float",
+				"b_x": "c_float",
+				"b_y": "c_float",
+				"b_z": "c_float",
+				"DC_x": "c_float",
+				"DC_y": "c_float",
+				"DC_z": "c_float",
+				"P_x": "c_float",
+				"P_y": "c_float",
+				"P_z": "c_float",
+				"D_x": "c_float",
+				"D_y": "c_float",
+				"D_z": "c_float",
+				"ticktime":"c_uint32"
+			}
+		},
+		"housekeepingADCS": {
+			"code": 22,
+			"fields": {
+				"temperature" : "c_float*8",
+				"temperatureRAW" : "c_uint16*8",
+				"current" : "c_float*5",
+				"currentRAW" : "c_uint16*5",
+				"ticktime":"c_uint32"
+			}
+		},
+		"setOpmodeADCS": {
+			"code": 0,
+			"fields": {
+				"opmode": "c_uint8"
+			}
+		},
+		"setAttitudeADCS": {
+			"code": 1,
+			"fields": {
+				"P_xx": "c_float",
+				"P_yy": "c_float",
+				"P_zz": "c_float",
+				"D_xx": "c_float",
+				"D_yy": "c_float",
+				"D_zz": "c_float",
+				"DC_xx": "c_float",
+				"DC_yy": "c_float",
+				"DC_zz": "c_float",
+				"dtheta_x": "c_float",
+				"dtheta_y": "c_float",
+				"dtheta_z": "c_float"
+			}
+		}
+		
+	}
+}
