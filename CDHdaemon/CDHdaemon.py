@@ -41,10 +41,8 @@ clientQueueRxTimeout=0.002 #timeout for reaing from client rx queue
 #--------------------------------------
 
 #Logging thread -----------------------
-telegrafSockPath="/tmp/telegraf.sock" #telegraf socket path
 logQueue=queue.Queue() #queue to send strings for telegraf/log file
 logQueueTimeout=0.05 #timeout for log queue read (to reduce CPU starving)
-telegrafRetryTime=3 #time waited after telegraf connection failure before retrying
 enableFileLog=True  #file logging enabled/disabled
 logFilePath="telegrafLog.txt" #log file path
 fileBuffering=2048 #file buffer size (see python file buffering modes for details)
@@ -194,40 +192,24 @@ def clientThread():
 def logThread():
 	print("Log thread started")
 	
-	global telegrafSockPath
 	global logQueue
 	global logQueueTimeout
-	global telegrafRetryTime
 	global logFilePath
 	global enableFileLog
 	global fileBuffering
 	global fileRetryTime
 	global stopThreads
 	
-	telegrafTryTime=0
 	socketState=0
 	
 	fileTryTime=0
 	fileState=0
 	
-	telegrafSock=None
 	logFile=None
 	
 	while 1: #thread loop
 		if stopThreads.is_set(): #need to close thread
-			break
-		
-		#checking if telegraf is not connected
-		if socketState==0 and (time.time()-telegrafTryTime)>telegrafRetryTime:
-			telegrafTryTime=time.time()
-			telegrafSock=socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
-			try:
-				telegrafSock.connect(telegrafSockPath)
-			except:
-				print("ERROR: Failed to connect to telegraf ({0}), retrying in {1} seconds".format(telegrafSockPath,telegrafRetryTime))
-			else:
-				socketState=1
-				print("telegraf socket ({0}) connected".format(telegrafSockPath))	
+			break	
 		
 		#checking if log file is not opened
 		if enableFileLog and fileState==0 and (time.time()-fileTryTime)>fileRetryTime:
@@ -246,18 +228,7 @@ def logThread():
 			log=logQueue.get(timeout=logQueueTimeout)
 		except:
 			pass
-		else:
-			#if some data has been received, encode it
-			logbyte=log.encode("utf-8")
-			#send it to telegraf
-			if socketState==1:
-				try:
-					telegrafSock.send(logbyte)
-				except:
-					print("ERROR: Failed to send data to telegraf")
-					telegrafSock.close()
-					socketState=0
-					
+		else:		
 			if enableFileLog and fileState==1:
 				try:
 					logFile.write(log)
@@ -265,9 +236,6 @@ def logThread():
 					print("ERROR: Failed to write data on file")
 					logFile.close()
 					fileState=0
-				
-	print("Closing telegraf socket")
-	telegrafSock.close()
 	
 	if enableFileLog:
 		print("Closing log file")
