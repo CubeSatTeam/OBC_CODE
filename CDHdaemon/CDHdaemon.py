@@ -305,44 +305,50 @@ def cdhThread():
 		if l != 0:
 			#check message code
 			code=buffrx[0]
-			#if the code and the length correspond to a valid message
-			if code in msg.msgDict.keys() and ctypes.sizeof(msg.msgDict[code]) == l:
-				# ------ HERE WE HANDLE EACH MESSAGE CODE FROM ADCS -------			
-				match msg.msgDict[code].__name__:
-					case "attitudeADCS" | "housekeepingADCS" | "opmodeADCS": #attitude telemetry message
-						#saving current timestamp
-						currt=time.time_ns()
-						
-						#creating the corresponding message struct
-						newstruct=msg.msgDict[code].from_buffer_copy(buffrx[:l])
-						
-						#building influxdb write string
-						influxstr=msg.msgDict[code].__name__+"," #inserting message name as dataset name
-						influxstr+="source=ADCS "#inserting source tag
-						#iteratively inserting all fields
-						for f in newstruct._fields_:
-							#checking if value is an array
-							if isinstance(getattr(newstruct,f[0]),ctypes.Array):
-								arraylist=getattr(newstruct,f[0])[:]
-								for index in range(len(arraylist)):
-									influxstr+="{0}={1}".format("{0}[{1}]".format(f[0],index),arraylist[index])
-									if (index+1)!=len(arraylist):
-										influxstr+=","							
-							else:
-								influxstr+="{0}={1}".format(f[0],getattr(newstruct,f[0]))
-							if f!=newstruct._fields_[-1]:
-								influxstr+=","
-						
-						#appending timestamp
-						influxstr+=" {0}\n".format(currt)
-						print(f"\n Data received !")
-						#sending to telegraf queue
-						logQueue.put(influxstr)
-						
-					case _: #default case
-						print("WARNING: {0} message from ADCS not handled".format(msg.msgDict[code].__name__))
+
+			# keep only codes 21 and 22
+			if code==21 or code ==22:
+				#if the code and the length correspond to a valid message
+				if code in msg.msgDict.keys() and ctypes.sizeof(msg.msgDict[code]) == l:
+					# ------ HERE WE HANDLE EACH MESSAGE CODE FROM ADCS -------			
+					match msg.msgDict[code].__name__:
+						case "attitudeADCS" | "housekeepingADCS" | "opmodeADCS": #attitude telemetry message
+							#saving current timestamp
+							currt=time.time_ns()
+							
+							#creating the corresponding message struct
+							newstruct=msg.msgDict[code].from_buffer_copy(buffrx[:l])
+							
+							#building influxdb write string
+							influxstr=msg.msgDict[code].__name__+"," #inserting message name as dataset name
+							influxstr+="source=ADCS "#inserting source tag
+							#iteratively inserting all fields
+							for f in newstruct._fields_:
+								#checking if value is an array
+								if isinstance(getattr(newstruct,f[0]),ctypes.Array):
+									arraylist=getattr(newstruct,f[0])[:]
+									for index in range(len(arraylist)):
+										influxstr+="{0}={1}".format("{0}[{1}]".format(f[0],index),arraylist[index])
+										if (index+1)!=len(arraylist):
+											influxstr+=","							
+								else:
+									influxstr+="{0}={1}".format(f[0],getattr(newstruct,f[0]))
+								if f!=newstruct._fields_[-1]:
+									influxstr+=","
+							
+							#appending timestamp
+							influxstr+=" {0}\n".format(currt)
+							print(f"\n Data received !")
+							#sending to telegraf queue
+							logQueue.put(influxstr)
+							
+						case _: #default case
+							print("WARNING: {0} message from ADCS not handled".format(msg.msgDict[code].__name__))
+				else:
+					print("WARNING: Received unknown message from ADCS (code {0} length {1})".format(code, l))
+
 			else:
-				print("WARNING: Received unknown message from ADCS (code {0} length {1})".format(code, l))
+				pass
 	
 	print("Closing UART")	
 	serial.deinitUART()
