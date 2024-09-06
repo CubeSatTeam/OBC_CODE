@@ -1,0 +1,8 @@
+../Core/Src/MTi1.c:53:16:computeChecksum	3
+../Core/Src/MTi1.c:64:13:sendMsg	2
+../Core/Src/MTi1.c:87:16:receiveMsg	14
+../Core/Src/MTi1.c:185:16:imuAckTransaction	4
+../Core/Src/MTi1.c:200:9:initIMUConfig	10
+../Core/Src/MTi1.c:248:10:buff2Int32	2
+../Core/Src/MTi1.c:261:6:writeIMUDataArray	3
+../Core/Src/MTi1.c:273:9:readIMUPacket	2

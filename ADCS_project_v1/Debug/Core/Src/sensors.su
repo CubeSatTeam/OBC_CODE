@@ -1,0 +1,5 @@
+../Core/Src/sensors.c:11:6:init_tempsens_handler	16	static
+../Core/Src/sensors.c:33:6:select_input	16	static
+../Core/Src/sensors.c:106:7:ADC_Conversion	40	static
+../Core/Src/sensors.c:176:6:voltage_to_temperature_conv	40	static
+../Core/Src/sensors.c:183:6:get_temperatures	32	static

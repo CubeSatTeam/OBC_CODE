@@ -1,0 +1,4 @@
+../Core/Src/sensors.c:17:6:init_tempsens_handler	1
+../Core/Src/sensors.c:32:6:select_input	9
+../Core/Src/sensors.c:104:10:ADC_Conversion	6
+../Core/Src/sensors.c:153:7:voltage_to_temperature_conv	1
