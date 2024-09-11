@@ -8,7 +8,7 @@
 #ifndef INC_CONSTANTS_H_
 #define INC_CONSTANTS_H_
 
-#define enable_printf 1
+#define enable_printf 0
 
 
 #define POWER_SUPPLY 12 //v

@@ -526,14 +526,7 @@ void OBC_Comm_Task(void const * argument)
 			else
 			{
 				memcpy(RxAttitude,rxBuff,sizeof(setAttitudeADCS));
-#if enable_printf
-				printf("Desired Angular velocity in x: %f \n",RxAttitude->deltaomega_x);
-				printf("Desired Angular velocity in y: %f \n",RxAttitude->deltaomega_y);
-				printf("Desired Angular velocity in z: %f \n",RxAttitude->deltaomega_z);
-				printf("Desired Magn Field in x: %f \n",RxAttitude->deltab_x);
-				printf("Desired Magn Field in y: %f \n",RxAttitude->deltab_y);
-				printf("Desired Magn Field in z: %f \n",RxAttitude->deltab_z);
-#endif
+
 				//Send Attitude Queue to Control Task
 			 	if (osMessagePut(setAttitudeADCSQueueHandle,(uint32_t)RxAttitude,200) != osOK) {
 #if enable_printf

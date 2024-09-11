@@ -22,15 +22,21 @@ typedef struct {
 	float omega_x;
 	float omega_y;
 	float omega_z;
+	float acc_x;
+	float acc_y;
+	float acc_z;
 	float b_x;
 	float b_y;
 	float b_z;
-	float theta_x;
-	float theta_y;
-	float theta_z;
-	float suntheta_x;
-	float suntheta_y;
-	float suntheta_z;
+	float DC_x;
+	float DC_y;
+	float DC_z;
+	float P_x;
+	float P_y;
+	float P_z;
+	float D_x;
+	float D_y;
+	float D_z;
 	uint32_t ticktime;
 }__attribute__((packed)) attitudeADCS;
 
@@ -56,15 +62,18 @@ typedef struct {
 #define SETATTITUDEADCS_CODE 1
 typedef struct {
 	uint8_t code;
-	float deltaomega_x; //desired
-	float deltaomega_y; //desired
-	float deltaomega_z; //desired
-	float deltab_x;
-	float deltab_y;
-	float deltab_z;
-	float deltatheta_x;
-	float deltatheta_y;
-	float deltatheta_z;
+	float P_xx;
+	float P_yy;
+	float P_zz;
+	float D_xx;
+	float D_yy;
+	float D_zz;
+	float DC_xx;
+	float DC_yy;
+	float DC_zz;
+	float dtheta_x;
+	float dtheta_y;
+	float dtheta_z;
 }__attribute__((packed)) setAttitudeADCS;
 
 #endif

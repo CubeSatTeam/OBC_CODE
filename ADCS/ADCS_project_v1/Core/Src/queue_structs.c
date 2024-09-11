@@ -114,27 +114,4 @@ void receive_Attitudequeue_control(void *event,void * PID_struct)
 {
 	setAttitudeADCS *int_attitude_adcs;
 	PID_Inputs_struct *int_PID_struct = (PID_Inputs_struct *)PID_struct;
-	if(((osEvent *)event)->status == osEventMessage)
-	{	
-#if enable_printf
-		printf("Control TASK: Received AttitudeADCS values via Queue \n");
-#endif
-		int_attitude_adcs = (setAttitudeADCS *)((osEvent *) event)->value.p;
-		int_PID_struct->angSpeed_Desired[0] = int_attitude_adcs->deltaomega_x; //desired
-		int_PID_struct->angSpeed_Desired[1] = int_attitude_adcs->deltaomega_y; //desired
-		int_PID_struct->angSpeed_Desired[2] = int_attitude_adcs->deltaomega_z; //desired
-		for(int i=0;i<3;i++)
-		{
-#if enable_printf
-			printf("Control Task: int_PID_struct->angSpeed_Desired[%d]: %f \n",i,int_PID_struct->angSpeed_Desired[i]);
-#endif
-		}
-		//Trasformare campo magnetico desiderato in corrente desiderata
-		//int_PID_struct->current_Desired[0]  = int_attitude_adcs->deltab_x; //desired
-		//int_PID_struct->current_Desired[1]  = int_attitude_adcs->deltab_y; //desired
-		//int_PID_struct->current_Desired[2]  = int_attitude_adcs->deltab_y; //desired
-	}
-	else{
-		printf("Control Task: Ricezione AttitudeADCS fallita con status: %d \n\n", ((osEvent *)event)->status);
-	}
 }
