@@ -22,6 +22,9 @@ typedef struct {
 	float omega_x;
 	float omega_y;
 	float omega_z;
+	float acc_x;
+	float acc_y;
+	float acc_z;
 	float b_x;
 	float b_y;
 	float b_z;

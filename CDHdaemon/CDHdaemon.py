@@ -43,7 +43,7 @@ clientQueueRxTimeout=0.002 #timeout for reaing from client rx queue
 #Logging thread -----------------------
 logQueue=queue.Queue() #queue to send strings for telegraf/log file
 logQueueTimeout=0.05 #timeout for log queue read (to reduce CPU starving)
-enableFileLog=True  #file logging enabled/disabled
+enableFileLog=False  #file logging enabled/disabled
 logFilePath="telegrafLog.txt" #log file path
 fileBuffering=2048 #file buffer size (see python file buffering modes for details)
 		#file buffer has been set to a big value because a lot of I/O from 
@@ -301,14 +301,18 @@ def cdhThread():
 		#try reading message from serial
 		buffrx=bytes(serial.getMaxLen())
 		l=serial.receiveUART(buffrx,len(buffrx))
+		#print(buffrx)
 		#print("l: ", l)
 		if l != 0:
+			print("Buffer received != 0")
 			#check message code
 			code=buffrx[0]
 
-			# keep only codes 21 and 22
-			if code==21 or code ==22:
+			# keep only code 21 
+			if code==21:
 				#if the code and the length correspond to a valid message
+				print(code)
+				print(l)
 				if code in msg.msgDict.keys() and ctypes.sizeof(msg.msgDict[code]) == l:
 					# ------ HERE WE HANDLE EACH MESSAGE CODE FROM ADCS -------			
 					match msg.msgDict[code].__name__:
@@ -339,6 +343,7 @@ def cdhThread():
 							#appending timestamp
 							influxstr+=" {0}\n".format(currt)
 							print(f"\n Data received !")
+							print(influxstr)
 							#sending to telegraf queue
 							logQueue.put(influxstr)
 							

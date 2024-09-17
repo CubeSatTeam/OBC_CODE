@@ -3,8 +3,8 @@ Description=CDH daemon service
 
 [Service]
 User=pi
-WorkingDirectory=/home/pi/obc/OBC/CDHdaemon
-ExecStart=/home/pi/obc/OBC/CDHdaemon/CDHdaemon.py
+WorkingDirectory=/home/pi/OBC_CODE/OBC/CDHdaemon
+ExecStart=/home/pi/OBC_CODE/OBC/CDHdaemon/CDHdaemon.py
 Restart=always
 
 [Install]
