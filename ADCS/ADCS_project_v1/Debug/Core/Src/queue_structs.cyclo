@@ -1,0 +1,5 @@
+../Core/Src/queue_structs.c:12:6:processCombinedData	1
+../Core/Src/queue_structs.c:16:6:receive_IMUqueue_control	3
+../Core/Src/queue_structs.c:46:6:receive_IMUqueue_OBC	2
+../Core/Src/queue_structs.c:78:6:receive_Current_Tempqueue_OBC	5
+../Core/Src/queue_structs.c:113:6:receive_Attitudequeue_control	1

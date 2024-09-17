@@ -1,0 +1,10 @@
+../Core/Src/actuator_driver.c:14:6:init_actuator_handler	40	static
+../Core/Src/actuator_driver.c:39:6:get_actuator_current	48	static
+../Core/Src/actuator_driver.c:140:6:update_duty_dir	40	static
+../Core/Src/actuator_driver.c:185:6:actuator_START	16	static
+../Core/Src/actuator_driver.c:192:6:actuator_STOP	16	static
+../Core/Src/actuator_driver.c:200:6:ADC_Select_CH1	40	static
+../Core/Src/actuator_driver.c:216:6:ADC_Select_CH2	40	static
+../Core/Src/actuator_driver.c:232:6:ADC_Select_CH3	40	static
+../Core/Src/actuator_driver.c:248:6:ADC_Select_CH4	40	static
+../Core/Src/actuator_driver.c:264:6:ADC_Select_CH16	40	static

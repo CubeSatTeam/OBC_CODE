@@ -1,0 +1,8 @@
+../Core/Src/MTi1.c:57:16:computeChecksum	24	static
+../Core/Src/MTi1.c:68:13:sendMsg	24	static
+../Core/Src/MTi1.c:91:16:receiveMsg	112	static
+../Core/Src/MTi1.c:191:16:imuAckTransaction	32	static
+../Core/Src/MTi1.c:206:9:initIMUConfig	48	static
+../Core/Src/MTi1.c:254:10:buff2Int32	24	static
+../Core/Src/MTi1.c:267:6:writeIMUDataArray	40	static
+../Core/Src/MTi1.c:279:9:readIMUPacket	48	static
