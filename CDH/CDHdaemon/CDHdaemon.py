@@ -28,8 +28,8 @@ ADCperiod=5 #sampling period in seconds
 
 #Client thread ------------------------
 cdhSockPath="/tmp/CDH.sock"
-clientQueueTx=queue.Queue() #queue to send data to client
-clientQueueTxTimeout=0.1 #timeout for reading from client tx queue
+#clientQueueTx=queue.Queue() #queue to send data to client
+#clientQueueTxTimeout=0.1 #timeout for reading from client tx queue
 clientQueueRx=queue.Queue() #queue to receive data from client
 uartTimeout=0.010 # timeout for uart transmission with ack
 uartRetries=2 #number of retries in case of failed ack (total 3 tries)
@@ -120,6 +120,7 @@ def adcThread():
 		#sending data to logThread
 		logQueue.put(finalString)
 
+'''
 def clientThread():
 	print("Client thread started")
 	
@@ -188,6 +189,7 @@ def clientThread():
 		os.remove(cdhSockPath)
 	except:
 		pass	
+'''
 		
 def logThread():
 	print("Log thread started")
@@ -245,7 +247,7 @@ def cdhThread():
 	print("CDH thread started")
 	
 	global logQueue
-	global clientQueueTx
+	#global clientQueueTx
 	global clientQueueRx
 	global stopThreads
 	global clientQueueRxTimeout
@@ -260,6 +262,7 @@ def cdhThread():
 		if stopThreads.is_set(): #need to close thread
 			break
 	
+		'''
 		#try receiving data from client queue
 		try:
 			data=clientQueueRx.get(timeout=clientQueueRxTimeout)
@@ -296,7 +299,7 @@ def cdhThread():
 						clientQueueTx.put("{0} message sent\n".format(data.split(maxsplit=1)[0]))
 					else:
 						clientQueueTx.put("ERROR, ADCS didn't acknowledge {0}\n".format(data.split(maxsplit=1)[0]))
-					
+		'''
 						
 		#try reading message from serial
 		buffrx=bytes(serial.getMaxLen())
@@ -307,7 +310,7 @@ def cdhThread():
 			code=buffrx[0]
 
 			# keep only codes 21 and 22
-			if code==21 or code ==22:
+			if code==21:
 				#if the code and the length correspond to a valid message
 				if code in msg.msgDict.keys() and ctypes.sizeof(msg.msgDict[code]) == l:
 					# ------ HERE WE HANDLE EACH MESSAGE CODE FROM ADCS -------			
@@ -357,12 +360,12 @@ def cdhThread():
 #running all threads
 print("Starting threads")
 adcT=threading.Thread(target=adcThread, daemon=True)
-cliT=threading.Thread(target=clientThread, daemon=True)	
+#cliT=threading.Thread(target=clientThread, daemon=True)	
 cdhT=threading.Thread(target=cdhThread, daemon=True)	
 logT=threading.Thread(target=logThread, daemon=True)
 	
 adcT.start()
-cliT.start()
+#cliT.start()
 cdhT.start()
 logT.start()
 
@@ -371,7 +374,7 @@ print("All threads started")
 def stop_handler(sig, frame): #handler function for stop signals
 	global stopThreads
 	global adcT
-	global cliT
+	#global cliT
 	global cdhT
 	global logT
 	global threadTermTimeout
@@ -382,8 +385,8 @@ def stop_handler(sig, frame): #handler function for stop signals
 	
 	#waiting for all threads to join
 	adcT.join(timeout=threadTermTimeout)
-	cliT.join(timeout=threadTermTimeout)
-	cdhT.join(timeout=threadTermTimeout)
+	#cliT.join(timeout=threadTermTimeout)
+	#cdhT.join(timeout=threadTermTimeout)
 	logT.join(timeout=threadTermTimeout)
 	
 	print("All threads terminated or timed out, BYE!")
@@ -398,8 +401,8 @@ while 1:
 	allAlive=True
 	if not adcT.is_alive():
 		allAlive=False
-	if not cliT.is_alive():
-		allAlive=False
+	#if not cliT.is_alive():
+		#allAlive=False
 	if not cdhT.is_alive():
 		allAlive=False
 	if not logT.is_alive():
