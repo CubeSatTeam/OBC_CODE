@@ -291,9 +291,9 @@ uint8_t readIMUPacket(UART_HandleTypeDef* IMUhandle, float gyroscope[3], float m
 	if(receiveMsg(IMUhandle,&meas, &format, 1, timeout)){
 		//found packet
 
-		//writing gyro data
+		//writing acc data
 		writeIMUDataArray(&meas.data[IMU_DATA_ACC_INDEX], (uint32_t*)accelerometer, 3);
-
+		//writing gyro data
 		writeIMUDataArray(&meas.data[IMU_DATA_GYRO_INDEX], (uint32_t*)gyroscope, 3);
 		//writing mag data
 		writeIMUDataArray(&meas.data[IMU_DATA_MAG_INDEX], (uint32_t*)magnetometer, 3);

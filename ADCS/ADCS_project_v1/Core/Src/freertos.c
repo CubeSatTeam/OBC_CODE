@@ -796,10 +796,6 @@ void IMU_Task(void const * argument)
 	/* Infinite loop */
 	for(;;)
 	{
-		//printf("We are in IMU TASK \n");
-#if enable_printf
-		//printf("We are in IMU TASK \n");
-#endif
 
 		//Non c'è bisogno di settare o resettare il CTS e l'RTS della UART4 per IMU perchè le funzioni
 		//UART_Transmit e UART_Receive gestiscono la cosa automaticamente se dall'altro lato il dispositivo ha abilitato pure
@@ -821,11 +817,6 @@ void IMU_Task(void const * argument)
 		}*/
 		if(ret)
 		{
-#if enable_printf
-			printf("IMU correctly sampled:\n ");
-			printf("IMU: Giro x: %f,Giro y: %f,Giro z: %f \n",gyro[0],gyro[1],gyro[2]);
-			printf("IMU: Magn x: %f,Magn y: %f,Magn z: %f \n",mag[0],mag[1],mag[2]);
-#endif
 			/*for(uint32_t field=0; field<3;field++){
 					printf("%f \t",gyro[field]);
 			}
@@ -836,9 +827,7 @@ void IMU_Task(void const * argument)
 			printf("\n");*/
 
 			if (local_imu_struct == NULL) {
-#if enable_printf
-					   printf("IMU TASK: allocazione struttura fallita !\n");
-#endif
+				printf("IMU TASK: allocazione struttura fallita !\n");
 			}
 			else
 			{
@@ -846,46 +835,31 @@ void IMU_Task(void const * argument)
 				for (int i = 0; i < 3; i++)
 				{
 					local_imu_struct->gyro_msr[i] = gyro[i];
-#if enable_printf
-					//printf("IMU TASK: Giro[%d] : %f \n",i,local_imu_struct->gyro_msr[i]);
-#endif
 					local_imu_struct->mag_msr[i] = mag[i];
 					local_imu_struct->acc_msr[i] = acc[i];
 					printf("AAAAAAAAAAAAAAAAAAAAAAA  Accelerometer axis %d, value %f AAAAAAAAAAAAAA", i, acc[i]);
-#if enable_printf
-					//printf("IMU TASK: Magn Field[%d] : %f \n",i,local_imu_struct->mag_msr[i]);
-#endif
 				}
-			
 				//Invio queue a Control Task
 			 	if (osMessagePut(IMUQueue1Handle,(uint32_t)local_imu_struct,300) != osOK) {
-#if enable_printf
 			    	printf("Invio a Control Task fallito \n");
-#endif
 			       	free(local_imu_struct); // Ensure the receiving task has time to process
 				} else {
-#if enable_printf
 			        printf("Dati Inviati a Control Task \n");
-#endif
+
 			 	}
 			 	//Invio queue a OBC Task
 			 	if (osMessagePut(IMUQueue2Handle,(uint32_t)local_imu_struct,300) != osOK) {
-#if enable_printf
 			    	printf("Invio a OBC Task fallito \n");
-#endif
 			       	free(local_imu_struct); // Ensure the receiving task has time to process
 			 	} else {
-#if enable_printf
 			    	printf("Dati a Control Inviati \n");
-#endif
 				}
 			}
 		}
-		else
-#if enable_printf
+		else{
 			printf("IMU: Error configuring IMU \n");
-#endif
-		osDelay(1000);
+			osDelay(1000);
+		}
 	}
   /* USER CODE END IMU_Task */
 }
