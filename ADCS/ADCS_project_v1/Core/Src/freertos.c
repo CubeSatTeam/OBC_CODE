@@ -596,13 +596,13 @@ void OBC_Comm_Task(void const * argument)
 		//finally we send the message
 		if(cnt1 == 1)
 		{
-			printf("OBC TASK: after 5 counts: %lu \n",HAL_GetTick());
-			TxAttitude.code=ATTITUDEADCS_CODE;
-			TxAttitude.ticktime=HAL_GetTick();
-		if(sdlSend(&line1,(uint8_t *)&TxAttitude,sizeof(attitudeADCS),1)){
-#if enable_printf
-			printf("OBC : sent attitudeADCS bytes:%d \n",sizeof(attitudeADCS));
-#endif
+			printf("OBC TASK: after 7 counts: %lu \n",HAL_GetTick());
+			TxHousekeeping.code=HOUSEKEEPINGADCS_CODE;
+			TxHousekeeping.ticktime=HAL_GetTick();
+			//printf("OBC: Trying to send housekeeping \n");
+			//finally we send the message
+		if(sdlSend(&line1,(uint8_t *)&TxHousekeeping,sizeof(housekeepingADCS),1))
+		{
 			/*sentAttitudeMessages++;
 			if(sentAttitudeMessages==5)
 			{
@@ -614,10 +614,6 @@ void OBC_Comm_Task(void const * argument)
 			}
 		}
 		else{
-#if enable_printf
-			printf("OBC: Failed to send attitudeADCS \n");
-#endif
-
 		}
 		cnt1 = 0;
 		}
@@ -634,16 +630,10 @@ void OBC_Comm_Task(void const * argument)
 		//ALWAYS remember to set message code (use the generated defines
 		if(cnt2 == 3)
 		{
-			printf("OBC TASK: after 7 counts: %lu \n",HAL_GetTick());
-			TxHousekeeping.code=HOUSEKEEPINGADCS_CODE;
-			TxHousekeeping.ticktime=HAL_GetTick();
-			//printf("OBC: Trying to send housekeeping \n");
-			//finally we send the message
-		if(sdlSend(&line1,(uint8_t *)&TxHousekeeping,sizeof(housekeepingADCS),1))
-		{
-#if enable_printf
-		  	printf("OBC: Sent housekeepingADCS bytes:%d \n",sizeof(housekeepingADCS));
-#endif
+			printf("OBC TASK: after 5 counts: %lu \n",HAL_GetTick());
+			TxAttitude.code=ATTITUDEADCS_CODE;
+			TxAttitude.ticktime=HAL_GetTick();
+		if(sdlSend(&line1,(uint8_t *)&TxAttitude,sizeof(attitudeADCS),1)){
 		 	for(uint32_t y=0;y<sizeof(housekeepingADCS);y++){
 		// 		printf("%02x",((uint8_t *)&TxHousekeeping)[y]);
 			  }
