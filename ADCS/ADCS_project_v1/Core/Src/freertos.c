@@ -342,6 +342,7 @@ void Check_current_temp(void const * argument)
 	{
 		//volatile float prev = HAL_GetTick();
 		//printf("We are in CHECK TASK \n");
+
 		//----------------------------------------------------------------------
 
 		//GET TEMPERATURES------------------------------------------------------
@@ -399,6 +400,7 @@ void Check_current_temp(void const * argument)
 				//Send Housekeeping to OBC task
 				
 				if (local_current_temp_struct == NULL) {
+
 				}
 				else
 				{
@@ -407,16 +409,20 @@ void Check_current_temp(void const * argument)
 						for(int i=0;i<NUM_ACTUATORS;i++)
 						{
 							local_current_temp_struct->current[i] = currentbuf[i];
+
 			    		}
 						for(int i=NUM_ACTUATORS;i<NUM_TEMP_SENS+NUM_ACTUATORS;i++)
 						{
 							local_current_temp_struct->temperature[i - NUM_ACTUATORS] = ntc_values.temp[i - NUM_ACTUATORS];
+
 						}
 
 						//Invio queue a OBC Task
 						if (osMessagePut(ADCSHouseKeepingQueueHandle,(uint32_t)local_current_temp_struct,300) != osOK) {
+
 			       			free(local_current_temp_struct); // Ensure the receiving task has time to process
 						} else {
+
 						}
 						count = 0;
 					}
@@ -442,7 +448,7 @@ void Check_current_temp(void const * argument)
 		}
 		//volatile next = HAL_GetTick();
 		//printf("Execussion of check task: %.1f ms\n",next-prev);
-	    osDelay(300);
+	    osDelay(100);
 	  }
   /* USER CODE END Check_pwr_temp */
 }
@@ -471,18 +477,23 @@ void OBC_Comm_Task(void const * argument)
   for(;;)
   {
 	  //printf("We are in OBC TASK \n");
+
 	  /*-------------------RECEIVE FROM OBC-------------------------*/
 	  //trying to receive a message
 	  rxLen=sdlReceive(&line1,(uint8_t *)rxBuff,sizeof(rxBuff));
 	  if(rxLen){
+
 	  	if(rxBuff[0]==SETOPMODEADCS_CODE && rxLen==sizeof(setOpmodeADCS)){
+
 	  		//setOpmodeADCS msgStruct;
 	  		memcpy(&RxOpMode,rxBuff,sizeof(setOpmodeADCS));
 	  		opmode=RxOpMode.opmode;
 	  	}else if(rxBuff[0]==SETATTITUDEADCS_CODE && rxLen==sizeof(setAttitudeADCS)){
+
   			//do something...
   			//Send opMode = setattitudeadcs to Control Task
 			if (RxAttitude == NULL) {
+
 			}
 			else
 			{
@@ -490,26 +501,32 @@ void OBC_Comm_Task(void const * argument)
 
 				//Send Attitude Queue to Control Task
 			 	if (osMessagePut(setAttitudeADCSQueueHandle,(uint32_t)RxAttitude,200) != osOK) {
+
 			       	free(RxAttitude); // Ensure the receiving task has time to process
 				} else {
+
 			 	}
 			}
 	  		
 	  	}else if(rxBuff[0]==ATTITUDEADCS_CODE && rxLen==sizeof(attitudeADCS)){
+
   			//do something...
   			//(in theory this should never arrive to ADCS)
 	  	}else if(rxBuff[0]==HOUSEKEEPINGADCS_CODE && rxLen==sizeof(housekeepingADCS)){
+
   			//do something...
   			//(in theory this should never arrive to ADCS)
-	  	}else if(rxBuff[0]==OPMODEADCS_CODE && rxLen==sizeof(opmodeADCS)){
+	  	}
+	  	else if(rxBuff[0]==OPMODEADCS_CODE && rxLen==sizeof(opmodeADCS)){
   			//do something...
   			//(in theory this should never arrive to ADCS)
-	  	}else{
+	  	}
+	  	else{
   		}
   	}
 	  else
 	  {
-		  printf("Didn't receive any packet \n");
+		  //printf("Didn't receive any packet \n");
 	  }
 
 	 /*-------------------SEND TO OBC-------------------------*/
@@ -520,7 +537,7 @@ void OBC_Comm_Task(void const * argument)
 	  .....*/
 	
 	 //Receive HouseKeeping sensor values via Queue
-	retvalue = osMessageGet(ADCSHouseKeepingQueueHandle,300);
+	retvalue = osMessageGet(ADCSHouseKeepingQueueHandle,4);
 
 	//printf("OBC Task: Tick_Time: %lu \n",HAL_GetTick());
 
@@ -541,26 +558,13 @@ void OBC_Comm_Task(void const * argument)
 			TxHousekeeping.ticktime=HAL_GetTick();
 			//printf("OBC: Trying to send housekeeping \n");
 			//finally we send the message
-		if(sdlSend(&line1,(uint8_t *)&TxHousekeeping,sizeof(housekeepingADCS),1))
-		{
-			/*sentAttitudeMessages++;
-			if(sentAttitudeMessages==5)
-			{
-				printf("OBC: Sent %lu attitudeADCS messages bytes:%d\n",sentAttitudeMessages,sizeof(attitudeADCS));
-				sentAttitudeMessages=0;
-			}*/
-			for(uint32_t y=0;y<sizeof(attitudeADCS);y++){
-					//printf("%02x",((uint8_t *)&localAttitude)[y]);
-			}
-		}
-		else{
-		}
+            sdlSend(&line1,(uint8_t *)&TxHousekeeping,sizeof(housekeepingADCS),0);
 		cnt1 = 0;
 		}
 	}
 
 	//Receive Telemetry IMU via Queue
-	retvalue1 = osMessageGet(IMUQueue2Handle, 300);
+	retvalue1 = osMessageGet(IMUQueue2Handle, 4);
 
 	if (retvalue1.status == osEventMessage)
 	{
@@ -573,13 +577,7 @@ void OBC_Comm_Task(void const * argument)
 			printf("OBC TASK: after 5 counts: %lu \n",HAL_GetTick());
 			TxAttitude.code=ATTITUDEADCS_CODE;
 			TxAttitude.ticktime=HAL_GetTick();
-		if(sdlSend(&line1,(uint8_t *)&TxAttitude,sizeof(attitudeADCS),1)){
-		 	for(uint32_t y=0;y<sizeof(housekeepingADCS);y++){
-		// 		printf("%02x",((uint8_t *)&TxHousekeeping)[y]);
-			  }
-		}
-		else{
-		}
+		sdlSend(&line1,(uint8_t *)&TxAttitude,sizeof(attitudeADCS),0);
 		cnt2 = 0;
 		}
 
@@ -591,18 +589,10 @@ void OBC_Comm_Task(void const * argument)
 	opmodeMsg.code=OPMODEADCS_CODE;
 	//finally we send the message (WITH ACK REQUESTED)
 	//printf("OBC: Trying to send opmodeADCS \n");
-	if(sdlSend(&line1,(uint8_t *)&opmodeMsg,sizeof(opmodeADCS),1))
-	{
-	  for(uint32_t y=0;y<sizeof(opmodeADCS);y++){
-	  	//printf("%02x",((uint8_t *)&opmodeMsg)[y]);
-	  }
-	//  printf("\n");
-	}
-	else{
-	}
+	sdlSend(&line1,(uint8_t *)&opmodeMsg,sizeof(opmodeADCS),0);
 
 
-  	osDelay(1000);
+  	osDelay(50);
   }
   /* USER CODE END OBC_Comm_Task */
 }
@@ -630,10 +620,10 @@ void Control_Algorithm_Task(void const * argument)
 		//printf("We are in Control Algorithm TASK \n");
 		//Receive Telemetry IMU via Queue
 
-		retvalue1 = osMessageGet(setAttitudeADCSQueueHandle,200);
+		retvalue1 = osMessageGet(setAttitudeADCSQueueHandle,300);
 		processCombinedData((void*)&retvalue1,(void *)&PID_Inputs,receive_Attitudequeue_control);
 
-		retvalue = osMessageGet(IMUQueue1Handle, 300);
+		retvalue = osMessageGet(IMUQueue1Handle, 1000);
 		processCombinedData((void*)&retvalue,(void *)&PID_Inputs,receive_IMUqueue_control);
 
 		
@@ -687,7 +677,7 @@ void Control_Algorithm_Task(void const * argument)
 			printf("Control Task : Released IMURead_ControlMutex control");
 		}
 		*/
-		osDelay(500);
+		osDelay(100);
 	}
   /* USER CODE END Control_Algorithm_Task */
 }
@@ -695,8 +685,15 @@ void Control_Algorithm_Task(void const * argument)
 void IMU_Task(void const * argument)
 {
   /* USER CODE BEGIN IMU_Task */
+#if enable_printf
+	printf("Initializing IMU \n");
+#endif
 	//uint8_t ret = 1;
 	uint8_t ret = initIMUConfig(&huart4);
+#if enable_printf
+	if(ret) printf("IMU correctly configured \n");
+	else printf("Error configuring IMU \n");
+#endif
 
 	float gyro[3]={1,2,3};
 	float mag[3]={4,5,6};
@@ -715,7 +712,7 @@ void IMU_Task(void const * argument)
 		//da CubeMx.
 
 
-		ret=readIMUPacket(&huart4, gyro, mag, acc, 500); //mag measured in Gauss(G) unit -> 1G = 10^-4 Tesla
+		ret=readIMUPacket(&huart4, gyro, mag, acc, 100); //mag measured in Gauss(G) unit -> 1G = 10^-4 Tesla
 		mag[0]/=10000; //1G = 10^-4 Tesla
 		mag[1]/=10000; //1G = 10^-4 Tesla
 		mag[2]/=10000; //1G = 10^-4 Tesla
@@ -751,7 +748,7 @@ void IMU_Task(void const * argument)
 					printf("AAAAAAAAAAAAAAAAAAAAAAA  Accelerometer axis %d, value %f AAAAAAAAAAAAAA", i, acc[i]);
 				}
 				//Invio queue a Control Task
-			 	if (osMessagePut(IMUQueue1Handle,(uint32_t)local_imu_struct,300) != osOK) {
+			 	if (osMessagePut(IMUQueue1Handle,(uint32_t)local_imu_struct,4) != osOK) {
 			    	printf("Invio a Control Task fallito \n");
 			       	free(local_imu_struct); // Ensure the receiving task has time to process
 				} else {
@@ -759,7 +756,7 @@ void IMU_Task(void const * argument)
 
 			 	}
 			 	//Invio queue a OBC Task
-			 	if (osMessagePut(IMUQueue2Handle,(uint32_t)local_imu_struct,300) != osOK) {
+			 	if (osMessagePut(IMUQueue2Handle,(uint32_t)local_imu_struct,4) != osOK) {
 			    	printf("Invio a OBC Task fallito \n");
 			       	free(local_imu_struct); // Ensure the receiving task has time to process
 			 	} else {
@@ -769,7 +766,7 @@ void IMU_Task(void const * argument)
 		}
 		else{
 			printf("IMU: Error configuring IMU \n");
-			osDelay(1000);
+			osDelay(100);
 		}
 	}
   /* USER CODE END IMU_Task */
