@@ -1,0 +1,8 @@
+../Core/Src/pid_conversions.c:14:6:PID_attitude_error_calculation	1
+../Core/Src/pid_conversions.c:26:6:PID_attitude_Derivative_calculation	1
+../Core/Src/pid_conversions.c:61:6:PID_angSpeed_error_2_torque	1
+../Core/Src/pid_conversions.c:75:6:PID_torque_2_dipole	1
+../Core/Src/pid_conversions.c:90:6:PID_dipole_2_current	1
+../Core/Src/pid_conversions.c:103:6:PID_current_2_DutyCycle	1
+../Core/Src/pid_conversions.c:113:6:PID_INIT	2
+../Core/Src/pid_conversions.c:131:6:PID_main	2
