@@ -344,6 +344,7 @@ def cdhThread():
 							print(f"\n Data received !")
 							#sending to telegraf queue
 							logQueue.put(influxstr)
+							print(f"\n Data sent to logQueue...")
 							
 						case _: #default case
 							print("WARNING: {0} message from ADCS not handled".format(msg.msgDict[code].__name__))
