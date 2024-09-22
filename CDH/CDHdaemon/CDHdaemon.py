@@ -304,7 +304,7 @@ def cdhThread():
 		#try reading message from serial
 		buffrx=bytes(serial.getMaxLen())
 		l=serial.receiveUART(buffrx,len(buffrx))
-		#print("l: ", l)
+		print("Bytes on the line: ", l)
 		if l != 0:
 			#check message code
 			code=buffrx[0]
