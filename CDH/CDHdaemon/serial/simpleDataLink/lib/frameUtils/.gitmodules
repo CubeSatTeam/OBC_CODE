@@ -1,0 +1,3 @@
+[submodule "lib/bufferUtils"]
+	path = lib/bufferUtils
+	url = https://github.com/shimo97/bufferUtils
