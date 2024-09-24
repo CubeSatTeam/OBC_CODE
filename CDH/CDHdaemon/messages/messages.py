@@ -30,6 +30,9 @@ class attitudeADCS(Structure):
 		("omega_x",c_float),
 		("omega_y",c_float),
 		("omega_z",c_float),
+		("acc_x",c_float),
+		("acc_y",c_float),
+		("acc_z",c_float),
 		("b_x",c_float),
 		("b_y",c_float),
 		("b_z",c_float),
@@ -45,9 +48,9 @@ class attitudeADCS(Structure):
 		("ticktime",c_uint32)]
 
 	def __str__(self):
-		return "attitudeADCS <c_float omega_x> <c_float omega_y> <c_float omega_z> <c_float b_x> <c_float b_y> <c_float b_z> <c_float DC_x> <c_float DC_y> <c_float DC_z> <c_float P_x> <c_float P_y> <c_float P_z> <c_float D_x> <c_float D_y> <c_float D_z> <c_uint32 ticktime>"
+		return "attitudeADCS <c_float omega_x> <c_float omega_y> <c_float omega_z> <c_float acc_x> <c_float acc_y> <c_float acc_z> <c_float b_x> <c_float b_y> <c_float b_z> <c_float DC_x> <c_float DC_y> <c_float DC_z> <c_float P_x> <c_float P_y> <c_float P_z> <c_float D_x> <c_float D_y> <c_float D_z> <c_uint32 ticktime>"
 
-	convList=[int,float,float,float,float,float,float,float,float,float,float,float,float,float,float,float,int]
+	convList=[int,float,float,float,float,float,float,float,float,float,float,float,float,float,float,float,float,float,float,int]
 
 # message name: housekeepingADCS code: 22
 class housekeepingADCS(Structure):

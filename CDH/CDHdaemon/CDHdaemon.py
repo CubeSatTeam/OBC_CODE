@@ -82,6 +82,13 @@ def readADC(printerr=True):
 		setupADC(printerr)
 		
 	return convres
+
+
+
+def resetADC():
+	serial.deinitUART()
+	serial.initUART(ctypes.c_float(uartTimeout),ctypes.c_uint8(uartRetries))
+	setupADC()
 	
 def adcThread():
 	print("ADC thread started")
@@ -103,7 +110,7 @@ def adcThread():
 		#getting ADC data
 		#(for now error print in case of failed read is disabled to not fill the log
 		#if you want to enable error print every time pass True to the function)
-		ADCdata=readADC(False)
+		ADCdata=readADC(True)
 		#measurements reconstruction
 		for ch in range(8):
 			ADCdata[ch]=ADCdata[ch]*2.5/4095 #reconstructing measured voltage
@@ -120,7 +127,7 @@ def adcThread():
 		#sending data to logThread
 		logQueue.put(finalString)
 
-'''
+
 def clientThread():
 	print("Client thread started")
 	
@@ -189,7 +196,7 @@ def clientThread():
 		os.remove(cdhSockPath)
 	except:
 		pass	
-'''
+
 		
 def logThread():
 	print("Log thread started")
@@ -209,7 +216,23 @@ def logThread():
 	
 	logFile=None
 	
+
+	fail = True
+	
+	if enableFileLog and fileState==0 and (time.time()-fileTryTime)>fileRetryTime:
+		while(fail):
+			try:
+				logFile=open(logFilePath, "w", fileBuffering)
+				fileTryTime=time.time()
+				fail = False
+			except:
+				print("Error file not open damn")
+			else:
+				fileState=1
+				print("log file ({0}) opened".format(logFilePath))
+
 	while 1: #thread loop
+		'''
 		if stopThreads.is_set(): #need to close thread
 			break	
 		
@@ -224,7 +247,7 @@ def logThread():
 				fileState=1
 				print("log file ({0}) opened".format(logFilePath))
 				
-		
+		'''
 		#checking if there's some data to be logged
 		try:
 			log=logQueue.get(timeout=logQueueTimeout)
@@ -257,7 +280,7 @@ def cdhThread():
 	#initializing serial line towards ADCS
 	print("Initializing UART")
 	serial.initUART(ctypes.c_float(uartTimeout),ctypes.c_uint8(uartRetries))
-	
+	countzero = 0
 	while 1: #thread loop
 		if stopThreads.is_set(): #need to close thread
 			break
@@ -294,23 +317,35 @@ def cdhThread():
 				else:
 					#send message over serial
 					bufftx=bytes(msgStruct)
-					retVal=serial.sendUART(bufftx,len(bufftx),1) #requesting also an ack from ADCS
+					retVal=serial.sendUART(bufftx,len(bufftx),0) #requesting also an ack from ADCS
 					if retVal:
 						clientQueueTx.put("{0} message sent\n".format(data.split(maxsplit=1)[0]))
 					else:
 						clientQueueTx.put("ERROR, ADCS didn't acknowledge {0}\n".format(data.split(maxsplit=1)[0]))
-		'''
-						
+		
+		'''			
+		
 		#try reading message from serial
 		buffrx=bytes(serial.getMaxLen())
-		l=serial.receiveUART(buffrx,len(buffrx))
-		print("Bytes on the line: ", l)
+		try:
+			l=serial.receiveUART(buffrx,len(buffrx))
+		except:
+			print("error in receiveUART")
+		if l == 0:
+			#print("Zero")
+			countzero+=1
+		#print(l)
+		#print(countzero)
+			
+		#print("Bytes on the line: ", l)
 		if l != 0:
+			countzero=0
 			#check message code
 			code=buffrx[0]
-
+			#print(l)
 			# keep only codes 21 and 22
 			if code==21:
+				#print(buffrx)
 				#if the code and the length correspond to a valid message
 				if code in msg.msgDict.keys() and ctypes.sizeof(msg.msgDict[code]) == l:
 					# ------ HERE WE HANDLE EACH MESSAGE CODE FROM ADCS -------			
@@ -341,10 +376,11 @@ def cdhThread():
 							
 							#appending timestamp
 							influxstr+=" {0}\n".format(currt)
-							print(f"\n Data received !")
+							#print(f"\n Data received !")
 							#sending to telegraf queue
 							logQueue.put(influxstr)
-							print(f"\n Data sent to logQueue...")
+							#print(f"\n Data sent to logQueue...")
+							#print(influxstr)
 							
 						case _: #default case
 							print("WARNING: {0} message from ADCS not handled".format(msg.msgDict[code].__name__))
@@ -353,7 +389,12 @@ def cdhThread():
 
 			else:
 				pass
-	
+		else:
+			if countzero >= 400:
+				#print("Resetting ADC")
+				resetADC()
+				countzero = 0
+
 	print("Closing UART")	
 	serial.deinitUART()
 
