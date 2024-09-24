@@ -1,0 +1,6 @@
+[submodule "lib/frameUtils"]
+	path = lib/frameUtils
+	url = https://github.com/shimo97/frameUtils
+[submodule "lib/bufferUtils"]
+	path = lib/bufferUtils
+	url = https://github.com/shimo97/bufferUtils

@@ -181,7 +181,7 @@ void initUART(float timeout, uint8_t retries){
 	sdlInitLine(&uartLine,&txFuncUart,&rxFuncUart,intTimeout,retries);
 	
 	//signal that UART was correctly initialized
-	printf("%s correctly initialized\n",UART_DEV);
+	//printf("%s correctly initialized\n",UART_DEV);
 	
 	uartInit=1;
 	return;
@@ -189,7 +189,7 @@ void initUART(float timeout, uint8_t retries){
 
 void deinitUART(){
 	close(uartfd);
-	printf("%s correctly de-initialized\n",UART_DEV);
+	//printf("%s correctly de-initialized\n",UART_DEV);
 	uartInit=0;
 	return;
 	
